@@ -1,0 +1,19 @@
+{
+  "name": "fashion-ecom-site",
+  "version": "1.0.0",
+  "description": "cloud-based-backend-for-ecommerce-web-application",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YashKP1204/Cloud-Project-0.git"
+  },
+  "author": "yash k prajapati",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YashKP1204/Cloud-Project-0/issues"
+  },
+  "homepage": "https://github.com/YashKP1204/Cloud-Project-0#readme"
+}
