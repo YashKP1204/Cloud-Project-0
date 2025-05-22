@@ -14,13 +14,15 @@ const UserSchema = new mongoose.Schema(
         profile:{
             type:String
         },
+        googleId:{
+            type:String,
+        },
         password:{
             type:String,
         },
         googleId: { type: String }, // Store Google OAuth ID
         phone:{
             type:String,
-            required:true,
         },
         role:{
             type:String,

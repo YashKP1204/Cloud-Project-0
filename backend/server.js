@@ -5,7 +5,7 @@ const mongoose = require("mongoose")
 const app = express();
 const authRoutes = require("./src/routes/authRoutes"); 
 const userRoutes = require("./src/routes/userRoutes"); 
-
+const productRoutes = require('./src/routes/productRoutes');
 
 
 // middleware
@@ -19,8 +19,10 @@ app.get("/",(req,res)=>{
     res.status(200).send("E-commerce API is running....");
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
+app.use('/products', productRoutes);
+
 // app.use("/api/products", productRoutes);
 const PORT = process.env.PORT || 5000;
 
