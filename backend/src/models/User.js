@@ -13,10 +13,7 @@ const UserSchema = new mongoose.Schema(
         },
         profile:{
             type:String
-        },
-        googleId:{
-            type:String,
-        },
+        },        
         password:{
             type:String,
         },
@@ -31,19 +28,7 @@ const UserSchema = new mongoose.Schema(
         },
         address:{
             type:String,    
-        },
-        storeName:{
-            type:String,
-            required:function (){
-                return this.role === "seller";
-            },
-        },
-        storeDetails:{
-            type:String,
-            required:function(){
-                return this.role === "seller";
-            }
-        }
+        },       
     },
     {
         timestamps:true
