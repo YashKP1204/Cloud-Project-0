@@ -1,12 +1,11 @@
-// models/Shop.js
-const  mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-const shopSchema = new mongoose.Schema({
+const shopRequestSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
-    unique: true
+    unique: true // One request per user
   },
   shopName:{
     type:String,
@@ -33,28 +32,27 @@ const shopSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  isActive: {
-    type: Boolean,
-    default: true
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
   },
-  products: [
-    {
-      category: {
-        type: String,
-        required: true
-    },
-      productByCategory: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product'
-        }
-      ]
-    }
-  ],
+  rejectionReason: {
+    type: String,
+    default: ''
+  },
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  reviewedAt: {
+    type: Date
   }
 });
 
-module.exports = mongoose.model('Shop', shopSchema);
+module.exports = mongoose.model('ShopRequest', shopRequestSchema);
+
+
+
+
+  

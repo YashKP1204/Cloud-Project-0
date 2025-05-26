@@ -1,12 +1,14 @@
-const ShopRequest = require("../models/Shop");
+const ShopRequest = require("../models/ShopRequest");
 
 // POST /api/shop/request
 const submitShopRequest = async (req, res) => {
-  const { gstNumber, shopType, address, pinCode, state } = req.body;
+  console.log("inside submitShopRequest");
+  const { gstNumber,shopName, shopType, address, pinCode, state } = req.body;
   const userId = req.user._id;
 
   try {
     // Check if request already exists
+    console.log("try block")
     const existing = await ShopRequest.findOne({ user: userId });
     if (existing) {
       return res.status(400).json({ message: 'Shop request already submitted' });
@@ -15,6 +17,7 @@ const submitShopRequest = async (req, res) => {
     // Create new shop request
     const request = new ShopRequest({
       user: userId,
+      shopName,
       gstNumber,
       shopType,
       address,

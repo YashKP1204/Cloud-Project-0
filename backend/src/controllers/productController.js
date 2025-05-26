@@ -1,36 +1,68 @@
 const Product = require('../models/Product');
+const Shop = require('../models/Shop');
 const { uploadToS3 } = require('../utils/s3Uploader');
 // Create Product
 exports.createProduct = async (req, res) => {
   try {
-    console.log("Creating product...");
+    const { shopId } = req.params;
+    const shop = await Shop.findById(shopId);
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
     let imageUrls = [];
+    const { name, description, price, discount_price, stock, brand, category, sub_category } = req.body;
 
     if (req.files && req.files.length > 0) {
-      console.log("Files found:", req.files);
       const uploadPromises = req.files.map(file => uploadToS3(file));
       imageUrls = await Promise.all(uploadPromises);
-      console.log("Uploaded image URLs:", imageUrls);
     }
 
     const product = new Product({
-      ...req.body,
+      name,
+      description,
+      price,
+      discount_price,
+      stock,
+      brand,
+      category,
+      sub_category,
       seller: req.user._id,
       images: imageUrls
     });
 
-    await product.save();
-    res.status(201).json({ message: "Product created", product });
+    const newProduct = await product.save();
+
+    // 🔍 Find existing category
+    const categoryEntry = shop.products.find(entry => entry.category === newProduct.category);
+
+    if (categoryEntry) {
+      // ✅ If exists, push product ID to the category
+      categoryEntry.productByCategory.push(newProduct._id);
+    } else {
+ // ✅ Else, create new category block
+      console.log(newProduct.category); 
+      shop.products.push({
+        category: newProduct.category,
+        productByCategory: [newProduct._id]
+      });
+    }
+
+    await shop.save();
+
+    res.status(201).json({ message: "Product created", product: newProduct });
   } catch (err) {
     console.error("Error creating product:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
   
 
 // Update Product
 exports.updateProduct = async (req, res) => {
     try {
+      console.log("update product controller");
       let imageUrls = [];
   
       if (req.files && req.files.length > 0) {
@@ -67,7 +99,7 @@ exports.getProductById = async (req, res) => {
     try {
       const product = await Product.findById(req.params.id).populate('seller', 'name email');
       if (!product) return res.status(404).json({ message: "Product not found" });
-      res.json(product);
+      return res.status(200).json(product);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -75,10 +107,14 @@ exports.getProductById = async (req, res) => {
   
 
 // Get Seller's Products
-exports.getMyProducts = async (req, res) => {
+exports.getShopProducts = async (req, res) => {
   try {
-    const products = await Product.find({ seller: req.user._id });
-    res.json(products);
+    const {shopId} = req.params;
+    const shop = await Shop.findById(shopId).populate('products');
+     if (!shop) {
+      return res.status(404).json({ message: 'Shop not found' });
+    }
+    res.status(200).json({ products: shop.products });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -87,6 +123,7 @@ exports.getMyProducts = async (req, res) => {
 // getting all products for admin only 
 exports.getAllProducts = async(req,res)=>{
     try {
+      // this function is for admin and to reflect on dashboard - to get all products
         const products = await Product.find();
         res.status(200).json(products);
     } catch (err) {

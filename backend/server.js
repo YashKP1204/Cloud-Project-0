@@ -6,8 +6,8 @@ const app = express();
 const authRoutes = require("./src/routes/authRoutes"); 
 const userRoutes = require("./src/routes/userRoutes"); 
 const productRoutes = require('./src/routes/productRoutes');
-const shopRequestRoutes = require('./routes/shopRequestRoutes');
-const shopAdminRoutes = require('./routes/shopAdminRoutes');
+const shopRequestRoutes = require("./src/routes/shopRequestRoutes");
+const shopAdminRoutes = require('./src/routes/shopAdminRoutes');
 
 
 
@@ -25,7 +25,7 @@ app.get("/",(req,res)=>{
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
-app.use('/products', productRoutes);
+app.use('/shop/:shopId/products',productRoutes);
 app.use('/shop', shopRequestRoutes);
 app.use('/admin', shopAdminRoutes);
 

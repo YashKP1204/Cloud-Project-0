@@ -28,6 +28,7 @@ const authorizeRoles = (...allowedRoles) => {
     return (req, res, next) => {
       console.log("Authorize middleware called"); // Debugging line
       console.log("User role:", req.user ? req.user.role : "No user"); // Debugging line
+      console.log("Allowed roles:", allowedRoles); // Debugging line
       if (!req.user || !allowedRoles.includes(req.user.role)) {
         return res.status(403).json({ message: "Forbidden: Access is denied" });
       }

@@ -52,7 +52,7 @@ exports.register = async(req,res)=>{
     try {
       console.log("Registering user...")
         // Get user data from request body
-        const {name,email,password,role,phone,address,storeName,storeDetails} = req.body;
+        const {name,email,password,role,phone,address,} = req.body;
         console.log("User data:", req.body);
         // Check if all required fields are provided
         //Validate required fields 
@@ -72,9 +72,9 @@ exports.register = async(req,res)=>{
         }
 
         //validate seller fields
-        if (role === "seller" && (!address || !storeName || !storeDetails)) {
-            return res.status(400).json({ message: "Sellers must provide store details." });
-        }
+        // if (role === "seller" && (!address || !storeName || !storeDetails)) {
+        //     return res.status(400).json({ message: "Sellers must provide store details." });
+        // }
 
         //Hash the password 
         const salt = await bcrypt.genSalt(10);
@@ -90,8 +90,6 @@ exports.register = async(req,res)=>{
             role:role||"customer",
             phone,
             address,
-            storeName,
-            storeDetails,
         });
 
 

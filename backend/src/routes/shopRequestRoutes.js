@@ -4,8 +4,8 @@ const { submitShopRequest, getMyShopRequest, deleteMyShopRequest } = require('..
 const { protect } = require('../middleware/authMiddleware'); // JWT middleware
 
 // Only authenticated users can submit
+router.post('/request', protect, submitShopRequest);
 router.get('/request/get', protect, getMyShopRequest);
 router.delete('/request/delete', protect, deleteMyShopRequest);
-router.post('/request', protect, submitShopRequest);
 
 module.exports = router;
