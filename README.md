@@ -4,3 +4,6 @@ working on docker containerization technology , to effeciently work on x-platfor
 The end moto is to create a smooth ci/cd pipeline to automated the process of testing and deployment , 
 Currently working on backend development only, 
 the frontend is just for testing purpose right now 
+
+
+type of project : basic ecommerce project, admin centric, where user can place order, register their shop as seller , admin centralized controller to inventory management .  
