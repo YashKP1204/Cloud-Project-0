@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Shop = require("../models/Shop");
 
 const protect = async (req, res, next) => {
   console.log("Protect middleware called"); // Debugging line
@@ -35,7 +36,23 @@ const authorizeRoles = (...allowedRoles) => {
       next();
     };
   };
+
+
+const authorizeSeller = async (req, res, next) => {
+  if (!req.user || req.user.role !== 'seller') {
+    return res.status(403).json({ message: 'Access denied' });
+  }
+
+  const shop = await Shop.findOne({ user: req.user._id });
+  if (!shop) {
+    return res.status(404).json({ message: 'Shop not found for this seller' });
+  }
+
+  req.shop = shop; // inject shop into request object
+  next();
+};
+
   
 
   
-module.exports = { protect, authorizeRoles };
+module.exports = { protect, authorizeRoles , authorizeSeller };

@@ -4,7 +4,7 @@ const { protect , authorizeRoles} = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/profile",protect,authorizeRoles('user','seller'),getUserProfile);
+router.get("/profile",protect,getUserProfile);
 router.put("/profile/update",protect,authorizeRoles('user','seller'),updateUserProfile);
 router.delete("/delete", protect,authorizeRoles('user','seller'),deleteUserAccount);
 

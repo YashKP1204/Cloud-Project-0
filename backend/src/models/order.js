@@ -1,26 +1,67 @@
 // models/Order.js
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  buyer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // seller of product
-  products: [
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  orderItems: [
     {
-      product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-      quantity: { type: Number, required: true },
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true
+      },
+      quantity: {
+        type: Number,
+        required: true
+      },
+      price: Number,
+      seller: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+      },
+      isArrivedAtInventory: {
+        type: Boolean,
+        default: false
+      }
     }
   ],
   shippingAddress: {
     address: String,
     city: String,
     state: String,
-    pinCode: String,
+    postalCode: String,
     country: String,
+    phone: String
   },
-  totalAmount: { type: Number, required: true },
-  paymentStatus: { type: String, enum: ['Pending', 'Paid', 'Failed'], default: 'Pending' },
-  orderStatus: { type: String, enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], default: 'Pending' },
+  paymentMethod: {
+    type: String,
+    enum: ['COD', 'Card', 'UPI'],
+    required: true
+  },
+  totalPrice: {
+    type: Number,
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['Processing',"Ready", 'Shipped', 'Delivered', 'Cancelled'],
+    default: 'Processing'
+  },
+  isPaid: {
+    type: Boolean,
+    default: false
+  },
+  placedShopOrder:{
+    type:Boolean,
+    default: false
+  },
+  paidAt: Date,
+  deliveredAt: Date
 }, { timestamps: true });
 
-export default mongoose.model('Order', orderSchema);
- 
+module.exports = mongoose.model('Order', orderSchema);

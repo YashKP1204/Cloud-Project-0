@@ -8,7 +8,9 @@ const userRoutes = require("./src/routes/userRoutes");
 const productRoutes = require('./src/routes/productRoutes');
 const shopRequestRoutes = require("./src/routes/shopRequestRoutes");
 const shopAdminRoutes = require('./src/routes/shopAdminRoutes');
-
+const cartRoutes = require('./src/routes/cartRoutes');
+const orderRoutes = require('./src/routes/orderRoutes');
+const shopRoutes = require('./src/routes/shopRoutes');
 
 
 
@@ -25,10 +27,13 @@ app.get("/",(req,res)=>{
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
-app.use('/shop/:shopId/products',productRoutes);
-app.use('/shop', shopRequestRoutes);
+app.use('/shop/request/',shopRequestRoutes);
+app.use("/shop",shopRoutes); // This route can be used to get all shops or specific shop details
+app.use('/shop/:shopId/',productRoutes); // This route can be used to get products of a specific shop')
+app.use('/products', productRoutes); // This route can be used to get all products or specific products
 app.use('/admin', shopAdminRoutes);
-
+app.use('/cart', cartRoutes);
+app.use('/orders', orderRoutes);
 // app.use("/api/products", productRoutes);
 const PORT = process.env.PORT || 5000;
 

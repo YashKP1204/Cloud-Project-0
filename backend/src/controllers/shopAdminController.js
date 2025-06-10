@@ -5,7 +5,7 @@ const User = require('../models/User');
 // GET /api/shop/admin/requests - get all pending shop requests
 const getAllShopRequests = async (req, res) => {
   try {
-    const requests = await ShopRequest.find().populate('user', 'name email role');
+    const requests = await ShopRequest.find().populate('user', 'name email role').sort({ createdAt: -1 });
     res.json(requests);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch shop requests' });
@@ -65,8 +65,20 @@ const rejectShopRequest = async (req, res) => {
   }
 };
 
+const deleteShopRequest = async (req, res) => {
+  try {
+    const request = await ShopRequest.findByIdAndDelete(req.params.id);
+    if (!request) return res.status(404).json({ message: 'Request not found' });
+
+    res.json({ message: 'Shop request deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to delete shop request' });
+  }
+}
+
 module.exports = {
   getAllShopRequests,
   approveShopRequest,
   rejectShopRequest,
+  deleteShopRequest,
 };

@@ -51,6 +51,10 @@ const shopSchema = new mongoose.Schema({
       ]
     }
   ],
+  orders: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'ShopOrder'
+}],
   createdAt: {
     type: Date,
     default: Date.now

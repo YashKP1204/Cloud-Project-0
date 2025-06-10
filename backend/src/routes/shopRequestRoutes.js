@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({mergeParams:true});
 const { submitShopRequest, getMyShopRequest, deleteMyShopRequest } = require('../controllers/shopRequestController');
 const { protect } = require('../middleware/authMiddleware'); // JWT middleware
 

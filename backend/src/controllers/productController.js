@@ -1,5 +1,7 @@
 const Product = require('../models/Product');
 const Shop = require('../models/Shop');
+const Order = require('../models/Order');
+const ShopOrder = require('../models/ShopOrder');
 const { uploadToS3 } = require('../utils/s3Uploader');
 // Create Product
 exports.createProduct = async (req, res) => {
@@ -28,6 +30,7 @@ exports.createProduct = async (req, res) => {
       category,
       sub_category,
       seller: req.user._id,
+      shop:shopId,
       images: imageUrls
     });
 
@@ -110,6 +113,8 @@ exports.getProductById = async (req, res) => {
 exports.getShopProducts = async (req, res) => {
   try {
     const {shopId} = req.params;
+    console.log("Inside the getSHopProducsts contrller");
+    console.log("shopId:", shopId);
     const shop = await Shop.findById(shopId).populate('products');
      if (!shop) {
       return res.status(404).json({ message: 'Shop not found' });
@@ -132,15 +137,57 @@ exports.getAllProducts = async(req,res)=>{
 }
 
 // Delete Product
-exports.deleteProduct = async (req, res) => {
+// controllers/productController.js
+
+
+exports.safeDeleteProduct = async (req, res) => {
   try {
-    const product = await Product.findOneAndDelete({
-      _id: req.params.id,
-      seller: req.user._id
+    console.log("Inside safeDeleteProduct controller");
+    const productId = req.params.id;
+
+    // 1. Check User Orders with product that are NOT Delivered
+    const userOrder = await Order.findOne({
+      'orderItems.product': productId,
+      status: { $ne: 'Delivered' } // Not yet delivered
     });
-    if (!product) return res.status(404).json({ message: "Product not found" });
-    res.json({ message: "Product deleted" });
+    console.log("userOrder:", userOrder);
+
+    // 2. Check Shop Orders with product that are NOT Delivered
+    const shopOrder = await ShopOrder.findOne({
+      'orderItems.product': productId,
+      status: { $ne: 'Delivered' }
+    });
+    console.log("shopOrder:", shopOrder);
+
+    if (userOrder || shopOrder) {
+      console.log("Cannot delete product: It exists in active user/shop orders.");
+      return res.status(400).json({
+        message: 'Cannot delete product: It exists in active user/shop orders.'
+      });
+    }
+    console.log("No active orders found for this product. Proceeding with deletion.");
+
+    // 3. Remove reference from Shop.products
+    await Shop.updateMany(
+      {},
+      { $pull: { 'products.$[].productByCategory': productId } }
+    );
+    console.log("Removed product reference from all shops.");
+
+    // 4. Finally delete product
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+    console.log("Deleted product:", deletedProduct);
+
+    if (!deletedProduct) {
+      console.log("Product not found for deletion.");
+      return res.status(404).json({ message: 'Product not found.' });
+    }
+    console.log("Product deleted successfully.");
+
+    res.status(200).json({ message: 'Product deleted successfully and safely.' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Safe Delete Error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 };
+
